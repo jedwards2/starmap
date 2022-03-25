@@ -63,6 +63,14 @@ const angleStr = `−16°, 42', 58.0171"`;
 const help = angleCalc.angle2deg(angleStr);
 console.log(help);
 
+function checkIfStarinSky(location, declination) {
+  if (location.lat - declination < 90) {
+    return true;
+  } else return false;
+}
+
+console.log(checkIfStarinSky(location, -20.3845));
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
