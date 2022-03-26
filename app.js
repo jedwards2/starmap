@@ -34,26 +34,29 @@ const sun = sunFunctions.createSun(toi);
 //   console.log(angleCalc.deg2time(val.declination));
 // });
 
-const coordsJ2000 = {
+const sirius = {
   rightAscension: 101.28715533333333,
   declination: 16.71611586111111,
   radiusVector: 1,
 };
 
 const properMotion = {
-  rightAscension: -9.100167,
-  declination: -20.3845,
+  rightAscension: -0.0385,
+  declination: -1.205,
 };
 
 const star = starFunctions.createStar.byEquatorialCoordinates(
-  coordsJ2000,
+  sirius,
   toi,
   properMotion
 );
 
 const coords = new Promise((resolve, reject) => {
   resolve(star.getApparentGeocentricEquatorialSphericalCoordinates());
-}).then((val) => console.log(val));
+}).then((starCoords) => {
+  console.log(checkIfStarinSky(location, starCoords.declination));
+  console.log(starCoords);
+});
 
 const timeStr = "06h 45m 08.91728s";
 const angleInDeg = angleCalc.time2deg(timeStr);
@@ -69,7 +72,7 @@ function checkIfStarinSky(location, declination) {
   } else return false;
 }
 
-console.log(checkIfStarinSky(location, -20.3845));
+// console.log(checkIfStarinSky(location, -20.3845));
 
 const PORT = 3000;
 
