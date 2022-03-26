@@ -10,7 +10,7 @@ const app = express();
 
 let allStars = [];
 
-async function processLineByLine() {
+const starData = new Promise((resolve, reject) => {
   const fileStream = fs.createReadStream("starList.txt");
 
   const rl = readline.createInterface({
@@ -18,7 +18,7 @@ async function processLineByLine() {
     crlfDelay: Infinity,
   });
 
-  for await (const line of rl) {
+  rl.on("line", function (line) {
     let lineList = line.split("|");
     let newStar = {};
     newStar["name"] = lineList[1].trim();
@@ -31,13 +31,10 @@ async function processLineByLine() {
     newStar["notes"] = lineList[8].trim();
     newStar["class"] = lineList[9].trim();
     allStars.push(newStar);
-  }
-
-  console.log(allStars);
-  JSON.stringify(allStars);
-}
-
-processLineByLine();
+  }).on("close", function () {
+    resolve(allStars);
+  });
+}).then((allStars) => console.log(allStars));
 
 app.get("/", (req, res) => {
   res.json(allStars);
@@ -92,20 +89,18 @@ const coords = new Promise((resolve, reject) => {
 });
 
 const timeStr = "06h 45m 08.91728s";
-const angleInDeg = angleCalc.time2deg(timeStr);
-console.log(angleInDeg);
+const ascensionInDeg = angleCalc.time2deg(timeStr);
+console.log(ascensionInDeg);
 
 const angleStr = `−16°, 42', 58.0171"`;
-const help = angleCalc.angle2deg(angleStr);
-console.log(help);
+const declinationInDeg = angleCalc.angle2deg(angleStr);
+console.log(declinationInDeg);
 
 function checkIfStarinSky(location, declination) {
   if (location.lat - declination < 90) {
     return true;
   } else return false;
 }
-
-// console.log(checkIfStarinSky(location, -20.3845));
 
 const PORT = 3000;
 
