@@ -1,4 +1,6 @@
 const express = require("express");
+const fs = require("fs");
+const readline = require("readline");
 const angleCalc = require("astronomy-bundle/utils/angleCalc.js");
 const createTimeOfInterest = require("astronomy-bundle/time/createTimeOfInterest.js");
 const sunFunctions = require("astronomy-bundle/sun");
@@ -6,8 +8,39 @@ const starFunctions = require("astronomy-bundle/stars");
 
 const app = express();
 
+let allStars = [];
+
+async function processLineByLine() {
+  const fileStream = fs.createReadStream("starList.txt");
+
+  const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity,
+  });
+
+  for await (const line of rl) {
+    let lineList = line.split("|");
+    let newStar = {};
+    newStar["name"] = lineList[1].trim();
+    newStar["ra"] = lineList[2].trim();
+    newStar["dec"] = lineList[3].trim();
+    newStar["ra_prop"] = lineList[4].trim();
+    newStar["dec_prop"] = lineList[5].trim();
+    newStar["vmag"] = lineList[6].trim();
+    newStar["spect_type"] = lineList[7].trim();
+    newStar["notes"] = lineList[8].trim();
+    newStar["class"] = lineList[9].trim();
+    allStars.push(newStar);
+  }
+
+  console.log(allStars);
+  JSON.stringify(allStars);
+}
+
+processLineByLine();
+
 app.get("/", (req, res) => {
-  res.send("Hello");
+  res.json(allStars);
 });
 
 const location = {
